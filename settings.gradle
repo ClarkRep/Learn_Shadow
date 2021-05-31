@@ -1,0 +1,41 @@
+include ':app'
+rootProject.name = "Learn_Shadow"
+
+
+//插件相关
+include ':QRPlugin:ShadowPluginModule'
+//Shadow 的源码库
+includeBuildCopyLocalProperties("shadow/sdk/coding")
+includeBuildCopyLocalProperties("shadow/sdk/core")
+includeBuildCopyLocalProperties("shadow/sdk/dynamic")
+
+def includeBuildCopyLocalProperties(String projectName) {
+    includeBuild projectName
+    def localPropertiesFile = file("./local.properties")
+    if (localPropertiesFile.exists()) {
+        copy {
+            from localPropertiesFile
+            into projectName
+        }
+    }
+}
+
+//Android Studio目前不支持自动为复合构建中的子构建自动创建local.properties文件，所以我们将项目的 local.properties 拷贝到 ShadowSDK 的项目中去。
+def includeAndCopyLocalProperties(String projectName, String projectDir) {
+    include projectName
+    def targetPath = ""
+    if (projectDir != null && projectDir.length() > 0) {
+        project(":${projectName}").projectDir = file(projectDir)
+        targetPath = projectDir
+    } else {
+        targetPath = projectName
+    }
+
+    def localPropertiesFile = file("./local.properties")
+    if (localPropertiesFile.exists()) {
+        copy {
+            from localPropertiesFile
+            into targetPath
+        }
+    }
+}
