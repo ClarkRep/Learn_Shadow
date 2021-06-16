@@ -14,8 +14,8 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.android.tools.build:gradle:$build_gradle_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
+    implementation "com.android.tools.build:gradle:$BUILD_GRADLE_VERSION"
     implementation project(':transform')
     testImplementation 'junit:junit:4.12'
     testImplementation gradleTestKit()

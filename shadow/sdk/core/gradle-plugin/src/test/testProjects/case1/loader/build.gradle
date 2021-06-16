@@ -9,7 +9,9 @@ android {
         applicationId "com.tencent.shadow.test.gradle.case1"
         minSdkVersion MIN_SDK_VERSION
         targetSdkVersion TARGET_SDK_VERSION
-        versionCode VERSION_CODE
-        versionName VERSION_NAME
+
+        //gradle的编译版本升级到4.1之后，废弃了VERSION_CODE和VERSION_NAME，需要自己定义这两个字段了
+        buildConfigField "int", 'VERSION_CODE', String.valueOf(VERSION_CODE)
+        buildConfigField 'String', 'VERSION_NAME', "\"" + VERSION_NAME + "\""
     }
 }

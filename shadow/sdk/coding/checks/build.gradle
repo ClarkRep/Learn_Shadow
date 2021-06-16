@@ -2,22 +2,23 @@ apply plugin: 'kotlin'
 
 group 'com.tencent.shadow.coding'
 
+apply from: '../../../config.gradle'
+
 /*
 Lint Version
 The lint version of the libraries (specified in this project as the lintVersion variable in build.gradle) should be the same version that is used by the Gradle plugin.
 
 If the Gradle plugin version is X.Y.Z, then the Lint library version is X+23.Y.Z.
  */
-ext.lintVersion = '26.1.2'
 
 dependencies {
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compileOnly "com.android.tools.lint:lint-api:$lintVersion"
-    compileOnly "com.android.tools.lint:lint-checks:$lintVersion"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
+    compileOnly "com.android.tools.lint:lint-api:$LINT_VERSION"
+    compileOnly "com.android.tools.lint:lint-checks:$LINT_VERSION"
     testCompile "junit:junit:4.12"
-    testCompile "com.android.tools.lint:lint:$lintVersion"
-    testCompile "com.android.tools.lint:lint-tests:$lintVersion"
-    testCompile "com.android.tools:testutils:$lintVersion"
+    testCompile "com.android.tools.lint:lint:$LINT_VERSION"
+    testCompile "com.android.tools.lint:lint-tests:$LINT_VERSION"
+    testCompile "com.android.tools:testutils:$LINT_VERSION"
 }
 
 compileKotlin {

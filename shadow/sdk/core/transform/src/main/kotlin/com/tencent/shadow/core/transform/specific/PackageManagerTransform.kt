@@ -104,7 +104,7 @@ class PackageManagerTransform : SpecificTransform() {
                         "getPackageInfo",
                         "resolveContentProvider",
                         "queryContentProviders",
-                        "resolveActivity",
+                        "resolveActivity"
                 )
         )
     }

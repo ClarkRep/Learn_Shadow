@@ -3,20 +3,28 @@
 //buildscript不能从其他gradle文件中apply，所以这段buildscript脚本存在于多个子构建中。
 //请更新buildscript时同步更新。
 buildscript {
-    ext.kotlin_version = '1.4.10'
-    ext.build_gradle_version = '4.0.2'
+    apply from: '../../config.gradle'
     repositories {
-        if (!System.getenv().containsKey("DISABLE_TENCENT_MAVEN_MIRROR")) {
-            maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
-        } else {
-            google()
-            jcenter()
-        }
+        google()
+        jcenter()
+
+//        if (!System.getenv().containsKey("DISABLE_TENCENT_MAVEN_MIRROR")) {
+//            maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
+//        } else {
+//            google()
+//            jcenter()
+//        }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:$build_gradle_version"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.android.tools.build:gradle:$BUILD_GRADLE_VERSION"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
     }
 }
-apply from: '../../../buildScripts/gradle/common.gradle'
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
 

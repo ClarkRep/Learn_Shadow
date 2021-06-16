@@ -3,8 +3,8 @@ apply plugin: 'kotlin'
 group 'com.tencent.shadow.core'
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    compile "com.android.tools.build:gradle:$build_gradle_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
+    compile "com.android.tools.build:gradle:$BUILD_GRADLE_VERSION"
     compile 'org.javassist:javassist:3.22.0-GA'
     compile gradleApi()
     testCompile 'junit:junit:4.12'
