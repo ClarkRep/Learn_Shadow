@@ -1,0 +1,59 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+apply from: file('../../config.gradle')
+
+android {
+    compileSdkVersion COMPILE_SDK_VERSION
+
+    defaultConfig {
+        applicationId HOST_APPLICATION_ID
+
+        minSdkVersion MIN_SDK_VERSION
+        targetSdkVersion TARGET_SDK_VERSION
+
+        buildToolsVersion BUILD_TOOLS_VERSION
+
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.create("release")
+            signingConfig.initWith(buildTypes.debug.signingConfig)
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.tencent.shadow.core:loader'
+    implementation 'com.tencent.shadow.dynamic:dynamic-loader'
+    implementation 'com.tencent.shadow.dynamic:dynamic-loader-impl'
+
+    compileOnly 'com.tencent.shadow.core:runtime-debug'
+    compileOnly 'com.tencent.shadow.core:activity-container-debug'
+    compileOnly 'com.tencent.shadow.core:common-debug'
+    //下面这行依赖是为了防止在proguard的时候找不到LoaderFactory接口
+    compileOnly 'com.tencent.shadow.dynamic:dynamic-host-debug'
+
+    //宿主和插件协商好的常量
+    implementation project(':shadow:HostPluginManagerConstant')
+    compileOnly project(':shadow:HostPluginLoaderBridge')
+    //宿主和插件的沟通桥梁
+//    compileOnly files("${project(":shadow:HostPluginLoaderBridge").getBuildDir()}/outputs/jar/HostPluginLoaderBridge-debug.jar")
+}
+
+//preBuild.dependsOn(":shadow:HostPluginLoaderBridge")

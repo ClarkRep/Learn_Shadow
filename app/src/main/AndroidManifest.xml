@@ -2,20 +2,65 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.clark.learn.shadow">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
+        android:name=".application.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Learn_Shadow">
-        <activity android:name=".MainActivity">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--指定插件运行所在的进程为 主进程-->
+        <service android:name="com.clark.learn.shadow.shadowmodule.pluginservice.MainProcessPPS" />
+        <!--指定插件运行所在的进程为 :plugin进程-->
+        <service
+            android:name="com.clark.learn.shadow.shadowmodule.pluginservice.PluginProcessPPS"
+            android:process=":plugin" />
+
+        <!--dynamic activity注册
+          注意configChanges需要全注册
+          theme需要注册成透明
+          -->
+        <activity
+            android:name="com.clark.learn.shadow.plugindemo.runtime.PluginDefaultProxyActivity"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize|layoutDirection"
+            android:hardwareAccelerated="true"
+            android:launchMode="standard"
+            android:multiprocess="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/troop_Transparent" />
+
+        <activity
+            android:name="com.clark.learn.shadow.plugindemo.runtime.PluginSingleInstance1ProxyActivity"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize|layoutDirection"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:multiprocess="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/troop_Transparent" />
+
+        <activity
+            android:name="com.clark.learn.shadow.plugindemo.runtime.PluginSingleTask1ProxyActivity"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize|layoutDirection"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTask"
+            android:multiprocess="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/troop_Transparent"
+
+            />
+        <!--dynamic activity注册 end -->
     </application>
 
 </manifest>

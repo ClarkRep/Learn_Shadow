@@ -1,0 +1,103 @@
+apply from: "../normal-app/build.gradle"
+
+apply from: file('../../config.gradle')
+
+android {
+    defaultConfig {
+        applicationId HOST_APPLICATION_ID
+    }
+}
+
+dependencies {
+    //Shadow Transform后业务代码会有一部分实际引用runtime中的类
+    //如果不以compileOnly方式依赖，会导致其他Transform或者Proguard找不到这些类
+    compileOnly 'com.tencent.shadow.core:runtime-debug'
+}
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.tencent.shadow.core:runtime-debug'
+        classpath 'com.tencent.shadow.core:activity-container-debug'
+        classpath 'com.tencent.shadow.core:gradle-plugin'
+        classpath 'org.javassist:javassist:3.22.0-GA'
+    }
+}
+
+apply plugin: 'com.tencent.shadow.plugin'
+
+shadow {
+    transform {
+//        useHostContext = ['abc']
+    }
+
+    //插件的配置信息
+    //插件名
+    def pluginBusinessName = "PluginDemo"
+    //插件进行跳转的PartKey
+    def pluginPartKey = "PluginDemo"
+    //插件路径
+    def pluginDir = "shadow/PluginDemo"
+
+    packagePlugin {
+
+        pluginTypes {
+
+            debug {
+                //这里配置loader和runtime，是为了将他们俩都打包进assets目录。
+                loaderApkConfig = new Tuple2('PluginDemo-plugin-loader-debug.apk', ':PluginDemo-plugin-loader:assembleDebug')
+                runtimeApkConfig = new Tuple2('PluginDemo-plugin-runtime-debug.apk', ':PluginDemo-plugin-runtime:assembleDebug')
+                pluginApks {
+                    pluginApk1 {
+                        businessName = pluginBusinessName
+                        partKey = pluginPartKey
+
+                        //生成插件Apk的配置：打包task、生成的apkName、生成的apk路径。
+                        buildTask = ':PluginDemo-plugin-app:assembleDebug'
+                        apkName = 'PluginDemo-plugin-app-debug.apk'
+                        apkPath = "${pluginDir}/plugin-app/build/outputs/apk/debug/PluginDemo-plugin-app-debug.apk"
+
+                        //指定插件依赖宿主的包名白名单，插件在使用这些加入白名单包名中的类的时候，会去宿主的Classloader进行加载。
+                        hostWhiteList = ["com.clark.learn.shadow.hostpluginbridge"]
+                    }
+                }
+            }
+
+            release {
+                //这里配置loader和runtime，是为了将他们俩都打包进assets目录。
+                loaderApkConfig = new Tuple2('PluginDemo-plugin-loader-release.apk', ':PluginDemo-plugin-loader:assembleRelease')
+                runtimeApkConfig = new Tuple2('PluginDemo-plugin-runtime-release.apk', ':PluginDemo-plugin-runtime:assembleRelease')
+                pluginApks {
+                    pluginApk1 {
+                        businessName = pluginBusinessName
+                        partKey = pluginPartKey
+
+                        //生成插件Apk的配置：打包task、生成的apkName、生成的apk路径。
+                        buildTask = ':PluginDemo-plugin-app:assembleRelease'
+                        apkName = 'PluginDemo-plugin-app-release.apk'
+                        apkPath = "${pluginDir}/plugin-app/build/outputs/apk/release/PluginDemo-plugin-app-release.apk"
+
+                        //指定插件依赖宿主的包名白名单，插件在使用这些加入白名单包名中的类的时候，会去宿主的Classloader进行加载。
+                        hostWhiteList = ["com.clark.learn.shadow.hostpluginbridge"]
+                    }
+                }
+            }
+        }
+
+        //指定loader和runtime的路径
+        loaderApkProjectPath = "${pluginDir}/plugin-loader"
+        runtimeApkProjectPath = "${pluginDir}/plugin-runtime"
+
+        archiveSuffix = System.getenv("PluginSuffix") ?: ""
+        archivePrefix = 'plugin'
+        destinationDir = "${getRootProject().getBuildDir()}"
+
+        version = 4
+        compactVersion = [1, 2, 3]
+        uuidNickName = "1.1.5"
+    }
+}

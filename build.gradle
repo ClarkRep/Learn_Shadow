@@ -3,20 +3,28 @@ buildscript {
     apply from: 'config.gradle'
 
     dependencies {
-        classpath deps.androidGradlePlugin
-        classpath deps.kotlin.gradlePlugin
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
+        classpath "com.android.tools.build:gradle:$BUILD_GRADLE_VERSION"
     }
 
     repositories {
-        google()
-        jcenter()
+        if (!System.getenv().containsKey("DISABLE_TENCENT_MAVEN_MIRROR")) {
+            maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
+        } else {
+            google()
+            jcenter()
+        }
     }
 }
 
 allprojects {
     repositories {
-        google()
-        jcenter()
+        if (!System.getenv().containsKey("DISABLE_TENCENT_MAVEN_MIRROR")) {
+            maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
+        } else {
+            google()
+            jcenter()
+        }
     }
 }
 

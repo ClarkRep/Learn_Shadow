@@ -3,16 +3,21 @@ plugins {
     id 'kotlin-android'
 }
 
-apply from: rootProject.file('common.gradle')
+apply from: rootProject.file('config.gradle')
 
 android {
+    compileSdkVersion COMPILE_SDK_VERSION
+
     defaultConfig {
-        applicationId "com.clark.learn.shadow"
+        applicationId HOST_APPLICATION_ID
+
+        minSdkVersion MIN_SDK_VERSION
+        targetSdkVersion TARGET_SDK_VERSION
 
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -21,10 +26,89 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        debug {
+            assets.srcDir('build/generated/assets/PluginManager/debug/')
+            assets.srcDir('build/generated/assets/plugin-zip/debug/')
+        }
+        release {
+            assets.srcDir('build/generated/assets/PluginManager/release/')
+            assets.srcDir('build/generated/assets/plugin-zip/release/')
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
 }
 
 dependencies {
     implementation deps.kotlin.stdlib
     implementation deps.androidx.coreKtx
     implementation deps.androidx.appcompat
+
+    implementation 'com.tencent.shadow.core:common'
+    implementation 'com.tencent.shadow.dynamic:dynamic-host'
+
+    implementation 'commons-io:commons-io:2.5'//sample-host从assets中复制插件用的
+
+    implementation project(':shadow:HostPluginBridge')
+    implementation project(':shadow:HostPluginLoaderBridge')
+    implementation project(':shadow:HostPluginManagerConstant')
+
+}
+
+def createCopyTask(projectName, buildType, name, apkName, inputFile, taskName) {
+    def outputFile = file("${getBuildDir()}/generated/assets/${name}/${buildType}/${apkName}")
+    outputFile.getParentFile().mkdirs()
+    return tasks.create("copy${buildType.capitalize()}${name.capitalize()}Task", Copy) {
+        group = 'build'
+        description = "复制${name}到assets中."
+        from(inputFile.getParent()) {
+            include(inputFile.name)
+            rename { outputFile.name }
+        }
+        into(outputFile.getParent())
+
+    }.dependsOn("${projectName}:${taskName}")
+}
+
+def generateAssets(generateAssetsTask, buildType) {
+    //将PluginManager打包进asset目录
+    def moduleName = 'PluginManager'
+    def pluginManagerApkFile = file(
+            "${project(":PluginManager").getBuildDir()}" +
+                    "/outputs/apk/${buildType}/" +
+                    "${moduleName}-${buildType}.apk"
+    )
+    generateAssetsTask.dependsOn createCopyTask(
+            ':PluginManager',
+            buildType,
+            moduleName,
+            'pluginmanager.apk',
+            pluginManagerApkFile,
+            "assemble${buildType.capitalize()}"
+    )
+
+    //将插件打包进asset目录
+    def pluginZip = file("${getRootProject().getBuildDir()}/plugin-${buildType}.zip")
+    generateAssetsTask.dependsOn createCopyTask(
+            ':PluginDemo-plugin-app',
+            buildType,
+            'plugin-zip',
+            "plugin-${buildType}.zip",
+            pluginZip,
+            "package${buildType.capitalize()}Plugin"
+    )
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == "generateDebugAssets") {
+        generateAssets(task, 'debug')
+    }
+    if (task.name == "generateReleaseAssets") {
+        generateAssets(task, 'release')
+    }
 }
