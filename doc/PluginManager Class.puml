@@ -1,0 +1,97 @@
+@startuml
+
+interface PluginManager{
+    void enter()
+}
+
+interface PluginManagerImpl{
+    void onCreate(Bundle bundle);
+    void onSaveInstanceState(Bundle outState);
+    void onDestroy();
+}
+
+class DynamicPluginManager{
+    PluginManagerUpdater mUpdater;
+    PluginManagerImpl mManagerImpl;
+
+    void enter(Context context, long fromId, Bundle bundle, EnterCallback callback);
+    void updateManagerImpl(Context context);
+}
+
+note left of BasePluginManager : 插件、loader、runtime的本地解压操作
+abstract class BasePluginManager{
+    abstract protected String getName();
+
+    PluginConfig installPluginFromZip(File zip, String hash);
+    void onInstallCompleted(PluginConfig pluginConfig);
+    InstalledPlugin.Part getPluginPartByPartKey(String uuid, String partKey);
+    InstalledPlugin.Part getLoaderOrRunTimePart(String uuid, int type);
+    void oDexPlugin(String uuid, String partKey, File apkFile);
+    void oDexPluginLoaderOrRunTime(String uuid, int type, File apkFile);
+    void extractSo(String uuid, String partKey, File apkFile);
+    void extractLoaderOrRunTimeSo(String uuid, int type, File apkFile);
+    List<InstalledPlugin> getInstalledPlugins(int limit);
+    public String getAbi();
+
+}
+
+note left of BaseDynamicPluginManager : 进行插件进程Service的绑定，获取已安装的插件、loader、runtime等信息
+abstract class BaseDynamicPluginManager{
+    abstract void onPluginServiceConnected(ComponentName name, IBinder service);
+    abstract void onPluginServiceDisconnected(ComponentName name);
+
+    void bindPluginProcessService(final String serviceName);
+    void waitServiceConnected(int timeout, TimeUnit timeUnit);
+    void onCreate(Bundle bundle);
+    void onSaveInstanceState(Bundle bundle);
+    void onDestroy();
+    InstalledApk getPlugin(String uuid, String partKey);
+    InstalledApk getInstalledPL(String uuid, int type);
+    InstalledApk getPluginLoader(String uuid);
+    InstalledApk getRuntime(String uuid);
+}
+
+note left of PluginManagerThatUseDynamicLoader : 和插件进程的Service进行通信，和插件的loader进行通信
+abstract class PluginManagerThatUseDynamicLoader{
+    protected PpsController mPpsController; //和插件Service进行通信的接口
+    protected PluginLoader mPluginLoader;   //和loader进行通信的接（这个loader是指打包进插件zip里面的load.apk）
+
+    void onPluginServiceConnected(ComponentName name, IBinder service);
+    void onPluginServiceDisconnected(ComponentName name);
+    void loadRunTime(String uuid);
+    void loadPluginLoader(String uuid);
+}
+
+
+abstract class FastPluginManager{
+    abstract String getPluginProcessServiceName(String partKey);
+
+    InstalledPlugin installPlugin(String zip, String hash , boolean odex);
+    void startPluginActivity( InstalledPlugin installedPlugin, String partKey, Intent pluginIntent);
+    Intent convertActivityIntent(InstalledPlugin installedPlugin, String partKey, Intent pluginIntent);
+    void loadPluginLoaderAndRuntime(String uuid, String partKey);
+    void loadPlugin(String uuid, String partKey);
+}
+
+class SamplePluginManager{
+    String getName();
+    String getAbi();
+    String getPluginProcessServiceName(String partKey);
+
+    void enter(final Context context, long fromId, Bundle bundle, final EnterCallback callback);
+    void onStartActivity(final Context context, Bundle bundle, final EnterCallback callback);
+}
+
+
+PluginManager <|-- PluginManagerImpl
+PluginManager  <|.. DynamicPluginManager
+
+BasePluginManager  <|-- BaseDynamicPluginManager
+
+PluginManagerImpl  <|.. PluginManagerThatUseDynamicLoader
+BaseDynamicPluginManager  <|-- PluginManagerThatUseDynamicLoader
+
+PluginManagerThatUseDynamicLoader <|-- FastPluginManager
+FastPluginManager <|-- SamplePluginManager
+
+@enduml

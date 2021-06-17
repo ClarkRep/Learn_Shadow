@@ -9,11 +9,15 @@ import com.clark.learn.shadow.hostpluginbridge.HostUiLayerProvider;
 import com.clark.learn.shadow.hostpluginloaderbridge.LoadPluginCallback;
 import com.clark.learn.shadow.shadowmodule.Shadow;
 
-public class MyApplication extends Application {
+import java.util.HashMap;
 
-    private static MyApplication mInstance;
+public class HostApplication extends Application {
 
-    public static MyApplication getInstance() {
+    private static HostApplication mInstance;
+
+    public static HashMap<String, ClassLoader> mPluginClassloaderMap = new HashMap<>();
+
+    public static HostApplication getInstance() {
         return mInstance;
     }
 
@@ -31,6 +35,9 @@ public class MyApplication extends Application {
     private void initShadow() {
         Shadow.init(this);
 
+        //初始化给插件提供View的Provider。
+        HostUiLayerProvider.init(this);
+
         //加载插件完成之后的回调，这个回调所在的进程，是指定的插件所运行的进程。
         LoadPluginCallback.setCallback(new LoadPluginCallback.Callback() {
             @Override
@@ -41,12 +48,10 @@ public class MyApplication extends Application {
             @Override
             public void afterLoadPlugin(String partKey, ApplicationInfo applicationInfo, ClassLoader pluginClassLoader, Resources pluginResources) {
                 Log.d("Plugin2ProcessPPS", "afterLoadPlugin(" + partKey + "," + applicationInfo.className + "{metaData=" + applicationInfo.metaData + "}" + "," + pluginClassLoader + ")");
+
+                //将加载的插件Classloader缓存下来，注意所在进程
+                mPluginClassloaderMap.put(partKey, pluginClassLoader);
             }
         });
-
-        //初始化给插件提供View的Provider。
-        HostUiLayerProvider.init(this);
     }
-
-
 }

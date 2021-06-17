@@ -3,12 +3,12 @@
     package="com.clark.learn.shadow.plugindemo">
 
     <application
-        android:name="com.clark.learn.shadow.plugindemo.PluginApplication"
+        android:name="com.clark.learn.shadow.plugindemo.application.PluginApplication"
         android:label="PluginDemo"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
         <activity
-            android:name="com.clark.learn.shadow.plugindemo.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleTask">
             <intent-filter>
@@ -16,5 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".PluginAddHostViewActivity"
+            android:configChanges="orientation|keyboardHidden" />
     </application>
 </manifest>

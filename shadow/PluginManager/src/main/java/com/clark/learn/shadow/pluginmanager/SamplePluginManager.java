@@ -65,8 +65,8 @@ public class SamplePluginManager extends FastPluginManager {
     @Override
     protected String getPluginProcessServiceName(String partKey) {
         if (Constant.PLUGIN_PART_KEY_PLUGIN_DEMO.equals(partKey)) {
-//            return "com.clark.learn.shadow.shadowmodule.pluginservice.MainProcessPPS";//主进程
-            return "com.clark.learn.shadow.shadowmodule.pluginservice.PluginProcessPPS";//子进程
+            return "com.clark.learn.shadow.shadowmodule.pluginservice.MainProcessPPS";//主进程
+//            return "com.clark.learn.shadow.shadowmodule.pluginservice.PluginProcessPPS";//子进程
         } else {
             //如果有默认PPS，可用return代替throw
             throw new IllegalArgumentException("unexpected plugin load request: " + partKey);

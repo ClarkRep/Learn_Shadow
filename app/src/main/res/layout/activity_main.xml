@@ -18,4 +18,17 @@
         android:layout_height="wrap_content"
         android:text="启动插件的MainActivity" />
 
+
+    <Button
+        android:id="@+id/btn_start_plugin_add_host_view_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="启动插件添加宿主View的Activity" />
+
+    <Button
+        android:id="@+id/btn_start_host_add_plugin_view_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="启动宿主添加插件View的Activity" />
+
 </LinearLayout>

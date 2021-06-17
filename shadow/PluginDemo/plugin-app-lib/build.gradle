@@ -29,9 +29,10 @@ android {
 }
 
 dependencies {
-
     implementation deps.kotlin.stdlib
     implementation deps.androidx.coreKtx
     implementation deps.androidx.appcompat
 
+    //编译期依赖，这样实际加载的时候，就加载宿主里的类。
+    compileOnly project(':shadow:HostPluginBridge')
 }

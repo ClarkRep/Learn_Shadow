@@ -1,0 +1,22 @@
+@startuml
+
+abstract class ClassLoader
+class BootClassLoader
+class BaseDexClassLoader
+class PathClassLoader
+class DexClassLoader
+
+
+ClassLoader <|-- BootClassLoader
+ClassLoader <|-- BaseDexClassLoader
+
+BaseDexClassLoader <|-- PathClassLoader
+BaseDexClassLoader <|-- DexClassLoader
+
+
+note left of BootClassLoader: "用来加载jre以及android.jar中的类"
+note bottom of PathClassLoader: "只能用来加载已安装的apk的dex"
+note bottom of DexClassLoader: "支持动态加载APK、DEX、JAR，可以从SDK中直接加载"
+
+
+@enduml

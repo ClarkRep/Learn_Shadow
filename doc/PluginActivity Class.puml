@@ -1,0 +1,19 @@
+@startuml
+class Context
+class ContextWrapper extends Context
+class ContextThemeWrapper extends ContextWrapper
+abstract class SubDirContextThemeWrapper extends ContextThemeWrapper
+class ShadowContext extends SubDirContextThemeWrapper
+
+abstract class GeneratedPluginActivity extends ShadowContext{
+
+}
+
+abstract class PluginActivity extends GeneratedPluginActivity{
+
+}
+
+class ShadowActivity extends PluginActivity{
+
+}
+@enduml
